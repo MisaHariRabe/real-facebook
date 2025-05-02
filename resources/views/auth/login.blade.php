@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Login - Facebook Clone</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="bg-green-100 text-green-800 p-3 mb-4 rounded">
                 {{ session('success') }}
             </div>
@@ -21,13 +23,17 @@
             <div>
                 <label class="block mb-1">Email</label>
                 <input type="email" name="email" class="w-full border rounded p-2" required>
-                @error('email') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
+                @error('email')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
                 <label class="block mb-1">Password</label>
                 <input type="password" name="password" class="w-full border rounded p-2" required>
-                @error('password') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
+                @error('password')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="flex items-center">
@@ -46,4 +52,5 @@
         </form>
     </div>
 </body>
+
 </html>

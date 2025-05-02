@@ -60,7 +60,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/pages/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
 });
 
-
 Route::middleware('auth')->group(function () {
     Route::get('/groups', [GroupController::class, 'index'])->name('groups.index');
     Route::get('/groups/create', [GroupController::class, 'create'])->name('groups.create');
