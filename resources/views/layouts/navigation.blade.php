@@ -18,6 +18,12 @@
                     <x-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.index')">
                         {{ __('Groups') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('pages.index')" :active="request()->routeIs('pages.index')">
+                        {{ __('Pages') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('notifications.show')" :active="request()->routeIs('notifications.show')">
+                        {{ __('Notifications') }}
+                    </x-nav-link>
                 </div>
             </div>
 

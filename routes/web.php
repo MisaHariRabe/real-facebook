@@ -10,7 +10,6 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\GroupController;
 
-
 Route::get('/', function () {
     return view('welcome');
 });
