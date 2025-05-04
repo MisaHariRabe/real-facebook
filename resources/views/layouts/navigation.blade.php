@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('pages.index')" :active="request()->routeIs('pages.index')">
                         <i class="bi bi-person-badge-fill text-2xl"></i>
                     </x-nav-link>
+                    <x-nav-link :href="route('shares.index')" :active="request()->routeIs('shares.index')">
+                        <i class="bi bi-share-fill text-2xl"></i>
+                    </x-nav-link>
                     <x-nav-link :href="route('notifications.show')" :active="request()->routeIs('notifications.show')">
                         <i class="bi bi-bell-fill text-2xl"></i>
                     </x-nav-link>
