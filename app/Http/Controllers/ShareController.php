@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Post;
 use App\Models\Share;
 use Illuminate\Http\Request;
@@ -30,6 +31,14 @@ class ShareController extends Controller
             'sharer_id' => Auth::id(),
             'post_id' => $post->id,
         ]);
+
+        if ($post->user_id !== Auth::id()) {
+            Notification::create([
+                'user_id' => $post->user_id,
+                'type' => 'Partage',
+                'data' => Auth::user()->name . ' a partagé votre publication',
+            ]);
+        }
 
         return back()->with('success', 'Post partagé avec succès.');
     }

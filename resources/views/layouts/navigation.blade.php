@@ -21,11 +21,28 @@
                     <x-nav-link :href="route('pages.index')" :active="request()->routeIs('pages.index')">
                         <i class="bi bi-person-badge-fill text-2xl"></i>
                     </x-nav-link>
+                    <x-nav-link :href="route('messages.show', 6)" :active="request()->routeIs('messages.show')">
+                        <i class="bi bi-messenger text-2xl"></i>
+                    </x-nav-link>
                     <x-nav-link :href="route('shares.index')" :active="request()->routeIs('shares.index')">
                         <i class="bi bi-share-fill text-2xl"></i>
                     </x-nav-link>
+                    @php
+                        $unreadCount = \App\Models\Notification::where('user_id', Auth::id())
+                            ->where('is_read', false)
+                            ->count();
+                    @endphp
+
                     <x-nav-link :href="route('notifications.show')" :active="request()->routeIs('notifications.show')">
-                        <i class="bi bi-bell-fill text-2xl"></i>
+                        <div class="relative">
+                            <i class="bi bi-bell-fill text-2xl"></i>
+                            @if ($unreadCount > 0)
+                                <span
+                                    class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                                    {{ $unreadCount }}
+                                </span>
+                            @endif
+                        </div>
                     </x-nav-link>
                 </div>
             </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Notification;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,14 @@ class CommentController extends Controller
         $comment->content = $request->content;
 
         $comment->save();
+
+        if ($post->user_id !== Auth::id()) {
+            Notification::create([
+                'user_id' => $post->user_id,
+                'type' => 'Commentaire',
+                'data' => Auth::user()->name . ' a commenté votre publication',
+            ]);
+        }
 
         return redirect()->route('posts.index', $post)->with('success', 'Comment added successfully.');
     }

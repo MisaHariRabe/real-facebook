@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex w-full justify-between">
             <h2 h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('All Posts') }}
+                {{ __('Toutes les publications') }}
             </h2>
-            <a href="{{ route('posts.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">Create New
-                Post
+            <a href="{{ route('posts.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">
+                Créer une publication
             </a>
         </div>
     </x-slot>

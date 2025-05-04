@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Like;
+use App\Models\Notification;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,14 @@ class LikeController extends Controller
         $like->likeable_id = $post->id;
         $like->likeable_type = Post::class;
         $like->save();
+
+        if ($post->user_id !== Auth::id()) {
+            Notification::create([
+                'user_id' => $post->user_id,
+                'type' => 'Like',
+                'data' => Auth::user()->name . ' a aimé votre publication',
+            ]);
+        }
 
         return back()->with('success', 'Publication aimée avec succès.');
     }

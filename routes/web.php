@@ -76,13 +76,13 @@ Route::delete('/posts/{post}/like', [LikeController::class, 'destroy'])->name('l
 
 
 Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
-Route::get('/messages/{userId}', [MessageController::class, 'show'])->name('messages.show');
+Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show');
 Route::post('/messages/{messageId}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
-
 
 Route::post('/notifications/{userId}', [NotificationController::class, 'store'])->name('notifications.store');
 Route::get('/notifications', [NotificationController::class, 'show'])->name('notifications.show');
 Route::post('/notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 
 Route::middleware('auth')->group(function () {
     Route::get('/pages', [PageController::class, 'index'])->name('pages.index');

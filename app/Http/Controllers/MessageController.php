@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,6 +26,14 @@ class MessageController extends Controller
             'receiver_id' => $request->receiver_id,
             'content' => $request->content,
         ]);
+
+        Notification::create([
+            'user_id' => $message->receiver_id,
+            'type' => 'Nouveau message',
+            'data' => "Vous avez reçu un nouveau message de " . Auth::user()->name,
+            'is_read' => false,
+        ]);
+
 
         return redirect()->back()->with('success', 'Message sent successfully!');
     }
@@ -49,7 +59,9 @@ class MessageController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        return view('messages.show', compact('messages', 'userId'));
+        $users = User::where('id', '!=', Auth::id())->get();
+
+        return view('messages.show', compact('messages', 'userId', 'users'));
     }
 
     /**

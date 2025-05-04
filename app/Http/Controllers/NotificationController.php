@@ -29,15 +29,6 @@ class NotificationController extends Controller
             'data' => $request->data,
         ]);
 
-
-
-        // User only After sending a message for any feature that need notification
-        Notification::create([
-            'user_id' => $this->message->receiver_id,
-            'type' => 'New Message',
-            'data' => "You have received a new message from " . Auth::user()->name,
-        ]);
-
         return redirect()->back()->with('success', 'Notification created successfully!');
     }
 
