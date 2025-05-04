@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\CommentLikeController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -63,7 +64,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
+
 Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+Route::post('/comments/{comment}/like', [CommentLikeController::class, 'store'])->name('comments.like');
+Route::delete('/comments/{comment}/like', [CommentLikeController::class, 'destroy'])->name('comments.unlike');
 
 Route::post('/posts/{post}/like', [LikeController::class, 'store'])->name('likes.store');
 Route::delete('/posts/{post}/like', [LikeController::class, 'destroy'])->name('likes.destroy');

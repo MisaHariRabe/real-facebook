@@ -8,10 +8,21 @@
     </div>
 
     <div class="self-center">
-        <button onclick="alert('Comment with id {{ $comment->id }} liked by {{ Auth::user()->username }}')"
-            class="inline-flex justify-center items-center p-0 w-8 h-8 border border-transparent text-sm leading-4 font-medium rounded-full text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-            <i class="bi bi-hand-thumbs-up"></i>
-        </button>
+        <form
+            action="{{ $comment->likes->where('user_id', Auth::id())->count() === 0 ? route('comments.like', $comment) : route('comments.unlike', $comment) }}"
+            method="POST" class="inline">
+            @csrf
+            @if ($comment->likes->where('user_id', Auth::id())->count() != 0)
+                @method('DELETE')
+            @endif
+
+            <button type="submit"
+                class="inline-flex justify-center gap-1 items-center p-1 w-fit h-8 border border-transparent text-sm leading-4 font-medium rounded-full {{ $comment->likes->where('user_id', Auth::id())->count() === 0 ? 'text-gray-500 dark:text-gray-400 dark:hover:text-gray-300' : 'text-blue-500 hover:text-blue-600' }}  bg-gray-100 dark:bg-gray-900 focus:outline-none transition ease-in-out duration-150">
+                <i
+                    class="bi bi-hand-thumbs-up{{ $comment->likes->where('user_id', Auth::id())->count() === 0 ? '' : '-fill' }}"></i>
+                {{ $comment->likes()->count() }}
+            </button>
+        </form>
     </div>
 
     @if ($comment->user_id === Auth::id())
