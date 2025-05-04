@@ -29,4 +29,9 @@ class Like extends Model
     {
         return $this->belongsTo(Post::class);
     }
+
+    public function comment()
+    {
+        return $this->belongsTo(Comment::class);
+    }
 }

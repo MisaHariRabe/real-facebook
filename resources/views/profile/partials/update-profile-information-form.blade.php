@@ -1,5 +1,5 @@
-<section>
-    <header>
+<section class="w-full">
+    <header class="flex flex-col items-center gap-2">
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Profile Information') }}
         </h2>
@@ -13,9 +13,22 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
+
+        <div class="relative">
+            <figure class="my-4 w-36 h-36 overflow-hidden rounded-full">
+                @if (Auth::user()->profile_photo)
+                    <img id="profile_photo_preview" src="{{ Auth::user()->profile_photo_url }}" alt="Photo de profil"
+                        class="w-full h-full object-cover">
+                @endif
+            </figure>
+            <label for="profile_photo" class="absolute cursor-pointer bottom-0 right-0">
+                <i class="bi bi-camera-fill w-12 h-12"></i>
+            </label>
+            <input id="profile_photo" name="profile_photo" type="file" accept="image/*" class="hidden">
+        </div>
 
         <div>
             <x-input-label for="name" :value="__('Name')" />
@@ -74,3 +87,17 @@
         </div>
     </form>
 </section>
+
+<script>
+    document.getElementById('profile_photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const preview = document.getElementById('profile_photo_preview');
+                preview.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>

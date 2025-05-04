@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -16,7 +17,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('user')->latest()->get();
+        $posts = Post::with('likes', 'user')->latest()->get();
 
         return view('posts.index', compact('posts'));
     }
@@ -35,8 +36,8 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'content' => 'required|string|max:1000',
-            'image' => 'nullable|image|max:2048', // optional image
+            'content' => 'required|string|max:99999',
+            'image' => 'nullable|image|max:20480',
         ]);
 
         $post = new Post();
@@ -78,13 +79,17 @@ class PostController extends Controller
         $this->authorize('update', $post);
 
         $request->validate([
-            'content' => 'required|string|max:1000',
+            'content' => 'required|string|max:99999',
             'image' => 'nullable|image|max:2048',
         ]);
 
         $post->content = $request->content;
 
         if ($request->hasFile('image')) {
+            if ($post->image && Storage::disk('public')->exists($post->image)) {
+                Storage::disk('public')->delete($post->image);
+            }
+
             $post->image = $request->file('image')->store('posts', 'public');
         }
 
@@ -101,6 +106,10 @@ class PostController extends Controller
         $this->authorize('delete', $post);
 
         $post->delete();
+
+        if ($post->image && Storage::disk('public')->exists($post->image)) {
+            Storage::disk('public')->delete($post->image);
+        }
 
         return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
     }

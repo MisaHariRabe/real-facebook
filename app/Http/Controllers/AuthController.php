@@ -45,9 +45,14 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'date_of_birth' => $request->date_of_birth,
             'gender' => $request->gender,
-            'profile_photo' => $request->profile_photo,
             'bio' => $request->bio,
         ]);
+
+        if ($request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('users', 'public');
+            $user->profile_photo = $path;
+            $user->save();
+        }
 
         Auth::login($user);
 
@@ -70,7 +75,7 @@ class AuthController extends Controller
         }
 
         throw ValidationException::withMessages([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'L\'adresse email n\'appartient à aucun utilisateur.',
         ]);
     }
 
