@@ -14,17 +14,22 @@ class LikeController extends Controller
      */
     public function store(Post $post)
     {
-        // Check if the user has already liked this post
-        if (Like::where('user_id', Auth::id())->where('post_id', $post->id)->exists()) {
-            return back()->with('error', 'You already liked this post.');
+        $alreadyLiked = Like::where('user_id', Auth::id())
+            ->where('likeable_id', $post->id)
+            ->where('likeable_type', Post::class)
+            ->exists();
+
+        if ($alreadyLiked) {
+            return back()->with('error', 'Vous avez déjà aimé cette publication.');
         }
 
         $like = new Like();
         $like->user_id = Auth::id();
-        $like->post_id = $post->id;
+        $like->likeable_id = $post->id;
+        $like->likeable_type = Post::class;
         $like->save();
 
-        return back()->with('success', 'Post liked successfully.');
+        return back()->with('success', 'Publication aimée avec succès.');
     }
 
     /**
@@ -32,13 +37,16 @@ class LikeController extends Controller
      */
     public function destroy(Post $post)
     {
-        $like = Like::where('user_id', Auth::id())->where('post_id', $post->id)->first();
+        $like = Like::where('user_id', Auth::id())
+            ->where('likeable_id', $post->id)
+            ->where('likeable_type', Post::class)
+            ->first();
 
         if ($like) {
             $like->delete();
-            return back()->with('success', 'Post unliked successfully.');
+            return back()->with('success', 'Réaction annulée.');
         }
 
-        return back()->with('error', 'You haven\'t liked this post yet.');
+        return back()->with('error', 'Vous n\'avez pas encore aimé ce post.');
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\CommentLikeController;
+use App\Http\Controllers\ShareController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -102,3 +103,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/groups/{id}/leave', [GroupController::class, 'leave'])->name('groups.leave');
 });
 
+Route::post('/posts/{post}/share', [ShareController::class, 'store'])->name('posts.share');
+Route::delete('/posts/{post}/unshare', [ShareController::class, 'destroy'])->name('posts.unshare');

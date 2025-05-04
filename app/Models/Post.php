@@ -38,4 +38,9 @@ class Post extends Model
     {
         return $this->morphMany(Like::class, 'likeable');
     }
+
+    public function shares()
+    {
+        return $this->hasMany(Share::class);
+    }
 }

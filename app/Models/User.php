@@ -83,4 +83,9 @@ class User extends Authenticatable
             return asset('images/default_profile.png'); // fallback if no photo
         }
     }
+
+    public function sharedPosts()
+    {
+        return $this->hasMany(Share::class);
+    }
 }

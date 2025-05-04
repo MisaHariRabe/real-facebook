@@ -6,23 +6,23 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('home') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                        <x-application-logo class="block h-9 w-auto fill-current text-blue-500 dark:text-gray-200" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                        {{ __('Home') }}
+                        <i class="bi bi-house-door-fill text-2xl p-4"></i>
                     </x-nav-link>
                     <x-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.index')">
-                        {{ __('Groups') }}
+                        <i class="bi bi-people-fill text-2xl"></i>
                     </x-nav-link>
                     <x-nav-link :href="route('pages.index')" :active="request()->routeIs('pages.index')">
-                        {{ __('Pages') }}
+                        <i class="bi bi-person-badge-fill text-2xl"></i>
                     </x-nav-link>
                     <x-nav-link :href="route('notifications.show')" :active="request()->routeIs('notifications.show')">
-                        {{ __('Notifications') }}
+                        <i class="bi bi-bell-fill text-2xl"></i>
                     </x-nav-link>
                 </div>
             </div>

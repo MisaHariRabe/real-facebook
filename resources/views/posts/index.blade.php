@@ -14,7 +14,5 @@
         @foreach ($posts as $post)
             <x-post :post="$post" />
         @endforeach
-
-
     </div>
 </x-app-layout>
