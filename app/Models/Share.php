@@ -8,7 +8,7 @@ class Share extends Model
 {
     protected $fillable = ['sharer_id', 'post_id'];
 
-    public function user()
+    public function sharer()
     {
         return $this->belongsTo(User::class);
     }

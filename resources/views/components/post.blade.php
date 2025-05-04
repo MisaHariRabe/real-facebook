@@ -11,9 +11,9 @@
                         <p
                             class="text-sm text-[#65686c] text-[0.8125rem] leading-[1.2308] font-semibold hover:cursor-pointer hover:underline">
                             @if ($post->updated_at)
-                                {{ $post->updated_at }}
+                                {{ $post->updated_at->diffForHumans() }}
                             @else
-                                {{ $post->created_at }}
+                                {{ $post->created_at->diffForHumans() }}
                             @endif
                         </p>
                     </div>

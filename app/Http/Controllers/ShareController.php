@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Auth;
 
 class ShareController extends Controller
 {
+    public function index()
+    {
+        $shares = Share::with('sharer', 'post')->latest()->get();
+        $posts = $shares;
+        return view("shares.index", compact("posts"));
+    }
+
     public function store(Post $post)
     {
         $alreadyShared = Share::where('sharer_id', Auth::id())

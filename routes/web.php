@@ -103,5 +103,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/groups/{id}/leave', [GroupController::class, 'leave'])->name('groups.leave');
 });
 
+Route::get('/shares', [ShareController::class, 'index'])->name('shares.index');
 Route::post('/posts/{post}/share', [ShareController::class, 'store'])->name('posts.share');
 Route::delete('/posts/{post}/unshare', [ShareController::class, 'destroy'])->name('posts.unshare');
