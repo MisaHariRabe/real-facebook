@@ -67,7 +67,11 @@
             @endif
 
             <div class="flex justify-between text-[#65688c] py-1.5">
-                <span>
+                {{-- <span>
+                    {{ \App\Helpers\NumberFormatter::shorten($post->likes->count()) }}
+                    réaction{{ $post->likes->count() > 1 ? 's' : '' }}
+                </span> --}}
+                <span id="like-count-{{ $post->id }}">
                     {{ \App\Helpers\NumberFormatter::shorten($post->likes->count()) }}
                     réaction{{ $post->likes->count() > 1 ? 's' : '' }}
                 </span>
@@ -78,7 +82,7 @@
             </div>
 
             <div class="border-t border-b border-[#77797d]/20 p-0 flex sm:gap-4 justify-evenly items-center">
-                <form
+                {{-- <form
                     action="{{ $post->likes->contains('user_id', Auth::id()) ? route('likes.destroy', $post->id) : route('likes.store', $post->id) }}"
                     method="POST">
                     @csrf
@@ -92,7 +96,14 @@
                             class="bi bi-hand-thumbs-up{{ $post->likes->contains('user_id', Auth::id()) ? '-fill' : '' }} text-lg"></i>
                         <span>J'aime</span>
                     </button>
-                </form>
+                </form> --}}
+                <button onclick="toggleLike({{ $post->id }})" id="like-btn-{{ $post->id }}"
+                    class="px-4 py-2 rounded-sm gap-2 flex items-center justify-center font-semibold {{ $post->likes->contains('user_id', Auth::id()) ? 'text-blue-500' : 'text-[#77797d]' }}">
+                    <i
+                        class="bi bi-hand-thumbs-up{{ $post->likes->contains('user_id', Auth::id()) ? '-fill' : '' }} text-lg"></i>
+                    <span>J'aime</span>
+                </button>
+
 
                 <button onclick="toggleComments({{ $post->id }})"
                     class="px-4 py-2 rounded-sm gap-2  flex items-center justify-center font-semibold text-[#77797d]">
@@ -152,5 +163,40 @@
         } else {
             button.textContent = 'Voir moins';
         }
+    }
+
+    function toggleLike(postId) {
+        const btn = document.getElementById(`like-btn-${postId}`);
+        const likeCountEl = document.getElementById(`like-count-${postId}`);
+        const hasLiked = btn.classList.contains('text-blue-500');
+        const url = `/posts/${postId}/like`;
+        const method = hasLiked ? 'DELETE' : 'POST';
+
+        fetch(url, {
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) throw data;
+
+                // Mise à jour du bouton
+                btn.classList.toggle('text-blue-500');
+                btn.classList.toggle('text-[#77797d]');
+                const icon = btn.querySelector('i');
+                icon.classList.toggle('bi-hand-thumbs-up');
+                icon.classList.toggle('bi-hand-thumbs-up-fill');
+
+                // Mise à jour du compteur
+                likeCountEl.textContent = `${data.likes_count} réaction${data.likes_count > 1 ? 's' : ''}`;
+            })
+            .catch(err => {
+                console.error(err);
+                alert(err.error || 'Une erreur est survenue.');
+            });
     }
 </script>
