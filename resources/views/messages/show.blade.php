@@ -38,7 +38,6 @@
                 @endforelse
             </div>
 
-            <!-- Envoi de message -->
             <form action="{{ route('messages.store') }}" method="POST" class="flex gap-2 items-center">
                 @csrf
                 <input type="hidden" name="receiver_id" value="{{ $userId }}">
