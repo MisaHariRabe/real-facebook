@@ -67,10 +67,6 @@
             @endif
 
             <div class="flex justify-between text-[#65688c] py-1.5">
-                {{-- <span>
-                    {{ \App\Helpers\NumberFormatter::shorten($post->likes->count()) }}
-                    réaction{{ $post->likes->count() > 1 ? 's' : '' }}
-                </span> --}}
                 <span id="like-count-{{ $post->id }}">
                     {{ \App\Helpers\NumberFormatter::shorten($post->likes->count()) }}
                     réaction{{ $post->likes->count() > 1 ? 's' : '' }}
@@ -82,21 +78,6 @@
             </div>
 
             <div class="border-t border-b border-[#77797d]/20 p-0 flex sm:gap-4 justify-evenly items-center">
-                {{-- <form
-                    action="{{ $post->likes->contains('user_id', Auth::id()) ? route('likes.destroy', $post->id) : route('likes.store', $post->id) }}"
-                    method="POST">
-                    @csrf
-                    @if ($post->likes->contains('user_id', Auth::id()))
-                        @method('DELETE')
-                    @endif
-
-                    <button type="submit"
-                        class="px-4 py-2 rounded-sm gap-2  flex items-center justify-center font-semibold {{ $post->likes->contains('user_id', Auth::id()) ? 'text-blue-500' : 'text-[#77797d]' }}">
-                        <i
-                            class="bi bi-hand-thumbs-up{{ $post->likes->contains('user_id', Auth::id()) ? '-fill' : '' }} text-lg"></i>
-                        <span>J'aime</span>
-                    </button>
-                </form> --}}
                 <button onclick="toggleLike({{ $post->id }})" id="like-btn-{{ $post->id }}"
                     class="px-4 py-2 rounded-sm gap-2 flex items-center justify-center font-semibold {{ $post->likes->contains('user_id', Auth::id()) ? 'text-blue-500' : 'text-[#77797d]' }}">
                     <i

@@ -38,7 +38,6 @@ class LikeController extends Controller
             ]);
         }
 
-        // return back()->with('success', 'Publication aimée avec succès.');
         return response()->json(['message' => 'Like ajouté avec succès.', 'likes_count' => $post->likes()->count()]);
     }
 
@@ -52,12 +51,6 @@ class LikeController extends Controller
             ->where('likeable_type', Post::class)
             ->first();
 
-        // if ($like) {
-        //     $like->delete();
-        //     return back()->with('success', 'Réaction annulée.');
-        // }
-
-        // return back()->with('error', 'Vous n\'avez pas encore aimé ce post.');
         if ($like) {
             $like->delete();
             return response()->json(['message' => 'Like retiré.', 'likes_count' => $post->likes()->count()]);
