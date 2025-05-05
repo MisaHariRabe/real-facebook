@@ -6,7 +6,6 @@
     </x-slot>
 
     <div class="flex h-[80vh]">
-        <!-- Liste des utilisateurs -->
         <aside class="w-1/4 border-r overflow-y-auto bg-white">
             <h3 class="p-4 text-lg font-semibold border-b">Discussions</h3>
             <ul>
@@ -23,9 +22,7 @@
             </ul>
         </aside>
 
-        <!-- Zone de chat -->
         <div class="w-3/4 p-4 flex flex-col justify-between">
-            <!-- Messages -->
             <div class="flex-1 overflow-y-auto space-y-2 mb-4">
                 @forelse ($messages as $message)
                     <div class="flex {{ $message->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
