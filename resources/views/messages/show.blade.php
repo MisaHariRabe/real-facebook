@@ -55,10 +55,16 @@
     const messagesContainer = document.getElementById('messages-container');
     const userId = {{ $userId }};
 
+    const isScrolledToBottom = () => {
+        return messagesContainer.scrollHeight - messagesContainer.clientHeight <= messagesContainer.scrollTop + 5;
+    };
+
     async function fetchMessages() {
         try {
             const response = await fetch(`/messages/fetch/${userId}`);
             const messages = await response.json();
+
+            const shouldScroll = isScrolledToBottom();
 
             messagesContainer.innerHTML = '';
             messages.forEach(message => {
@@ -79,7 +85,9 @@
                 messagesContainer.innerHTML += messageHTML;
             });
 
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            if (shouldScroll) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         } catch (error) {
             console.error('Erreur lors du fetch des messages:', error);
         }
