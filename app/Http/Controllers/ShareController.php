@@ -17,6 +17,9 @@ class ShareController extends Controller
         return view("shares.index", compact("posts"));
     }
 
+    /**
+     * Store a newly created share in storage.
+     */
     public function store(Post $post)
     {
         $alreadyShared = Share::where('sharer_id', Auth::id())
@@ -24,7 +27,9 @@ class ShareController extends Controller
             ->exists();
 
         if ($alreadyShared) {
-            return back()->with('error', 'Tu as déjà partagé ce post.');
+            return response()->json([
+                'error' => 'Tu as déjà partagé ce post.'
+            ], 400);
         }
 
         Share::create([
@@ -40,21 +45,31 @@ class ShareController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Post partagé avec succès.');
+        return response()->json([
+            'success' => 'Post partagé avec succès.',
+            'shares_count' => $post->shares()->count()
+        ]);
     }
 
+    /**
+     * Remove the specified share from storage.
+     */
     public function destroy(Post $post)
     {
         $share = Share::where('sharer_id', Auth::id())
             ->where('post_id', $post->id)
             ->first();
 
-        if (!$share) {
-            return back()->with('error', 'Vous n\'avez pas encore partagé ce post.');
+        if ($share) {
+            $share->delete();
+            return response()->json([
+                'success' => 'Partage supprimé.',
+                'shares_count' => $post->shares()->count()
+            ]);
         }
 
-        $share->delete();
-
-        return back()->with('success', 'Partage supprimé.');
+        return response()->json([
+            'error' => 'Vous n\'avez pas encore partagé ce post.'
+        ], 400);
     }
 }

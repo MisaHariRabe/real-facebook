@@ -21,7 +21,9 @@ class LikeController extends Controller
             ->exists();
 
         if ($alreadyLiked) {
-            return back()->with('error', 'Vous avez déjà aimé cette publication.');
+            return response()->json([
+                'error' => 'Vous avez déjà aimé cette publication.'
+            ]);
         }
 
         $like = new Like();
@@ -38,7 +40,10 @@ class LikeController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Like ajouté avec succès.', 'likes_count' => $post->likes()->count()]);
+        return response()->json([
+            'message' => 'Like ajouté avec succès.',
+            'likes_count' => $post->likes()->count()
+        ]);
     }
 
     /**
@@ -53,7 +58,10 @@ class LikeController extends Controller
 
         if ($like) {
             $like->delete();
-            return response()->json(['message' => 'Like retiré.', 'likes_count' => $post->likes()->count()]);
+            return response()->json([
+                'message' => 'Like retiré.',
+                'likes_count' => $post->likes()->count()
+            ]);
         }
 
         return response()->json(['error' => 'Non liké.'], 400);

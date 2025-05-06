@@ -73,12 +73,15 @@
                 </span>
                 <span>
                     {{ $post->comments->count() }} commentaire{{ $post->comments->count() > 1 ? 's' : '' }},
-                    {{ $post->shares()->count() }} partage{{ $post->comments->count() > 1 ? 's' : '' }}
+                </span>
+                <span id="share-count-{{ $post->id }}">
+                    {{ \App\Helpers\NumberFormatter::shorten($post->shares->count()) }}
+                    partage{{ $post->shares->count() > 1 ? 's' : '' }}
                 </span>
             </div>
 
             <div class="border-t border-b border-[#77797d]/20 p-0 flex sm:gap-4 justify-evenly items-center">
-                <button onclick="toggleLike({{ $post->id }})" id="like-btn-{{ $post->id }}"
+                <button onclick="likeUnlikePost({{ $post->id }})" id="like-btn-{{ $post->id }}"
                     class="px-4 py-2 rounded-sm gap-2 flex items-center justify-center font-semibold {{ $post->likes->contains('user_id', Auth::id()) ? 'text-blue-500' : 'text-[#77797d]' }}">
                     <i
                         class="bi bi-hand-thumbs-up{{ $post->likes->contains('user_id', Auth::id()) ? '-fill' : '' }} text-lg"></i>
@@ -92,7 +95,15 @@
                     <span>Commenter</span>
                 </button>
 
-                <form
+
+                <button onclick="shareUnsharePost({{ $post->id }})" id="share-btn-{{ $post->id }}"
+                    class="px-4 py-2 rounded-sm gap-2 flex items-center justify-center font-semibold {{ $post->shares->contains('sharer_id', Auth::id()) ? 'text-blue-500' : 'text-[#77797d]' }}">
+                    <i
+                        class="bi bi-share{{ $post->shares->contains('sharer_id', Auth::id()) ? '-fill' : '' }} text-lg"></i>
+                    <span>Partager</span>
+                </button>
+
+                {{-- <form
                     action="{{ $post->shares->where('sharer_id', auth()->id())->count() === 0
                         ? route('posts.share', $post)
                         : route('posts.unshare', $post) }}"
@@ -107,7 +118,7 @@
                             class="bi bi-share{{ $post->shares->where('sharer_id', auth()->id())->count() > 0 ? '-fill' : '' }} text-lg"></i>
                         <span>{{ $post->shares->where('sharer_id', auth()->id())->count() > 0 ? 'Partagé' : 'Partager' }}</span>
                     </button>
-                </form>
+                </form> --}}
             </div>
 
             <div class="mt-4 w-full hidden" id="comments-container-{{ $post->id }}">
@@ -146,7 +157,7 @@
         }
     }
 
-    function toggleLike(postId) {
+    function likeUnlikePost(postId) {
         const btn = document.getElementById(`like-btn-${postId}`);
         const likeCountEl = document.getElementById(`like-count-${postId}`);
         const hasLiked = btn.classList.contains('text-blue-500');
@@ -173,7 +184,43 @@
                 icon.classList.toggle('bi-hand-thumbs-up-fill');
 
                 // Mise à jour du compteur
-                likeCountEl.textContent = `${data.likes_count} réaction${data.likes_count > 1 ? 's' : ''}`;
+                likeCountEl.textContent = `${data.likes_count} commentaire${data.likes_count > 1 ? 's' : ''}`;
+            })
+            .catch(err => {
+                console.error(err);
+                alert(err.error || 'Une erreur est survenue.');
+            });
+    }
+
+    function shareUnsharePost(postId) {
+        const btn = document.getElementById(`share-btn-${postId}`);
+        const shareCountEl = document.getElementById(`share-count-${postId}`);
+        const hasShared = btn.classList.contains('text-blue-500');
+        const url = hasShared ? `/posts/${postId}/unshare` : `/posts/${postId}/share`;
+        const method = hasShared ? 'DELETE' : 'POST';
+
+        fetch(url, {
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) throw data;
+
+                // Mise à jour du bouton
+                btn.classList.toggle('text-blue-500');
+                btn.classList.toggle('text-[#77797d]');
+                const icon = btn.querySelector('i');
+                icon.classList.toggle('bi-share');
+                icon.classList.toggle('bi-share-fill');
+
+                // Mise à jour du compteur
+                shareCountEl.textContent =
+                    `${data.shares_count} commentaire${data.shares_count > 1 ? 's' : ''}`;
             })
             .catch(err => {
                 console.error(err);
