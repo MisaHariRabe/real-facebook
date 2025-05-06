@@ -34,8 +34,7 @@ class MessageController extends Controller
             'is_read' => false,
         ]);
 
-
-        return redirect()->back()->with('success', 'Message sent successfully!');
+        return response()->json(['success' => true, 'data' => $message]);
     }
 
     /**
@@ -88,7 +87,7 @@ class MessageController extends Controller
                 ->where('receiver_id', Auth::id());
         })
             ->orderBy('created_at', 'asc')
-            ->get();
+            ->get(['id', 'sender_id', 'receiver_id', 'content', 'created_at']);
 
         return response()->json($messages);
     }

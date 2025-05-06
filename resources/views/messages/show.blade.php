@@ -24,7 +24,7 @@
 
         <div class="w-3/4 p-4 flex flex-col justify-between">
             <div id="messages-container" class="flex-1 overflow-y-auto space-y-2 mb-4">
-                @forelse ($messages as $message)
+                @foreach ($messages as $message)
                     <div class="flex {{ $message->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
                         <div
                             class="px-4 py-2 rounded-lg max-w-xs
@@ -33,15 +33,14 @@
                             <p class="text-xs text-right mt-1">{{ $message->created_at->format('H:i') }}</p>
                         </div>
                     </div>
-                @empty
-                    <p class="text-center text-gray-500">Aucun message pour l’instant.</p>
-                @endforelse
+                @endforeach
             </div>
 
-            <form action="{{ route('messages.store') }}" method="POST" class="flex gap-2 items-center">
+            <form id="message-form" action="{{ route('messages.store') }}" method="POST"
+                class="flex gap-2 items-center">
                 @csrf
                 <input type="hidden" name="receiver_id" value="{{ $userId }}">
-                <textarea name="content" rows="2" placeholder="Écris un message..."
+                <textarea id="message-input" name="content" rows="2" placeholder="Écris un message..."
                     class="flex-1 border rounded px-3 py-2 resize-none" required></textarea>
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
                     Envoyer
@@ -52,8 +51,56 @@
 </x-app-layout>
 
 <script>
+    const displayedMessages = new Set();
     const messagesContainer = document.getElementById('messages-container');
     const userId = {{ $userId }};
+    const form = document.getElementById("message-form");
+    const messageInput = document.getElementById("message-input");
+
+    form.addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const messageContent = messageInput.value.trim();
+
+        if (!messageContent) return;
+
+        try {
+            const response = await fetch(form.action, {
+                method: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        'content'),
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de l’envoi du message');
+            }
+
+            const newMessage = await response.json();
+
+            messageInput.value = '';
+
+            // const wrapperClass = 'justify-end';
+            // const bubbleClass = 'bg-blue-500 text-white';
+
+            // const messageHTML = `
+            //     <div class="flex ${wrapperClass}">
+            //         <div class="px-4 py-2 rounded-lg max-w-xs ${bubbleClass}">
+            //             <p class="text-sm">${messageContent}</p>
+            //             <p class="text-xs text-right mt-1">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+            //         </div>
+            //     </div>
+            // `;
+            // messagesContainer.innerHTML += messageHTML;
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } catch (error) {
+            console.error('Erreur AJAX:', error);
+        }
+    })
 
     const isScrolledToBottom = () => {
         return messagesContainer.scrollHeight - messagesContainer.clientHeight <= messagesContainer.scrollTop + 5;
@@ -66,8 +113,11 @@
 
             const shouldScroll = isScrolledToBottom();
 
-            messagesContainer.innerHTML = '';
             messages.forEach(message => {
+                if (displayedMessages.has(message.id)) return;
+
+                displayedMessages.add(message.id);
+
                 const isCurrentUser = message.sender_id === {{ auth()->id() }};
                 const wrapperClass = isCurrentUser ? 'justify-end' : 'justify-start';
                 const bubbleClass = isCurrentUser ?
@@ -94,6 +144,5 @@
     }
 
     fetchMessages();
-
     setInterval(fetchMessages, 2000);
 </script>
