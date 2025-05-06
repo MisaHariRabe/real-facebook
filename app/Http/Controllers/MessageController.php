@@ -77,4 +77,19 @@ class MessageController extends Controller
 
         return redirect()->back();
     }
+
+    public function fetch($userId)
+    {
+        $messages = Message::where(function ($query) use ($userId) {
+            $query->where('sender_id', Auth::id())
+                ->where('receiver_id', $userId);
+        })->orWhere(function ($query) use ($userId) {
+            $query->where('sender_id', $userId)
+                ->where('receiver_id', Auth::id());
+        })
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json($messages);
+    }
 }

@@ -77,6 +77,7 @@ Route::delete('/posts/{post}/like', [LikeController::class, 'destroy'])->name('l
 
 Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
 Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show');
+Route::get('/messages/fetch/{userId}', [MessageController::class, 'fetch'])->name('messages.fetch');
 Route::post('/messages/{messageId}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
 
 Route::post('/notifications/{userId}', [NotificationController::class, 'store'])->name('notifications.store');
