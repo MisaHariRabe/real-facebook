@@ -102,23 +102,6 @@
                         class="bi bi-share{{ $post->shares->contains('sharer_id', Auth::id()) ? '-fill' : '' }} text-lg"></i>
                     <span>Partager</span>
                 </button>
-
-                {{-- <form
-                    action="{{ $post->shares->where('sharer_id', auth()->id())->count() === 0
-                        ? route('posts.share', $post)
-                        : route('posts.unshare', $post) }}"
-                    method="POST" class="inline">
-                    @csrf
-                    @if ($post->shares->where('sharer_id', auth()->id())->count() > 0)
-                        @method('DELETE')
-                    @endif
-                    <button type="submit"
-                        class="px-4 py-2 rounded-sm gap-2  flex items-center justify-center font-semibold {{ $post->shares->where('sharer_id', auth()->id())->count() > 0 ? 'text-blue-500' : 'text-[#77797d]' }}">
-                        <i
-                            class="bi bi-share{{ $post->shares->where('sharer_id', auth()->id())->count() > 0 ? '-fill' : '' }} text-lg"></i>
-                        <span>{{ $post->shares->where('sharer_id', auth()->id())->count() > 0 ? 'Partagé' : 'Partager' }}</span>
-                    </button>
-                </form> --}}
             </div>
 
             <div class="mt-4 w-full hidden" id="comments-container-{{ $post->id }}">
@@ -157,74 +140,72 @@
         }
     }
 
-    function likeUnlikePost(postId) {
-        const btn = document.getElementById(`like-btn-${postId}`);
-        const likeCountEl = document.getElementById(`like-count-${postId}`);
-        const hasLiked = btn.classList.contains('text-blue-500');
-        const url = `/posts/${postId}/like`;
-        const method = hasLiked ? 'DELETE' : 'POST';
+    async function togglePostAction({
+        postId,
+        type,
+        isActiveClass,
+        activeIcon,
+        inactiveIcon,
+        urlAction,
+        countKey
+    }) {
+        const btn = document.getElementById(`${type}-btn-${postId}`);
+        const countEl = document.getElementById(`${type}-count-${postId}`);
+        const hasAction = btn.classList.contains(isActiveClass);
+        const url = hasAction ? `/posts/${postId}/${urlAction[1]}` : `/posts/${postId}/${urlAction[0]}`;
+        const method = hasAction ? 'DELETE' : 'POST';
 
-        fetch(url, {
+        try {
+            const response = await fetch(url, {
                 method: method,
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        'content'),
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
-            })
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) throw data;
-
-                // Mise à jour du bouton
-                btn.classList.toggle('text-blue-500');
-                btn.classList.toggle('text-[#77797d]');
-                const icon = btn.querySelector('i');
-                icon.classList.toggle('bi-hand-thumbs-up');
-                icon.classList.toggle('bi-hand-thumbs-up-fill');
-
-                // Mise à jour du compteur
-                likeCountEl.textContent = `${data.likes_count} commentaire${data.likes_count > 1 ? 's' : ''}`;
-            })
-            .catch(err => {
-                console.error(err);
-                alert(err.error || 'Une erreur est survenue.');
             });
+
+            const data = await response.json();
+            if (!response.ok) throw data;
+
+            // Mise à jour du bouton
+            btn.classList.toggle(isActiveClass);
+            btn.classList.toggle('text-[#77797d]');
+            const icon = btn.querySelector('i');
+            icon.classList.toggle(inactiveIcon);
+            icon.classList.toggle(activeIcon);
+
+            // Mise à jour du compteur
+            countEl.textContent =
+                `${data[countKey]} ${ ((type === "share") ? "commentaire" : "réaction") + ((data.shares_count > 1) ? 's' : '')}`;
+        } catch (err) {
+            console.error(err);
+            alert(err.error || 'Une erreur est survenue.');
+        }
+    }
+
+    function likeUnlikePost(postId) {
+        togglePostAction({
+            postId,
+            type: 'like',
+            isActiveClass: 'text-blue-500',
+            activeIcon: 'bi-hand-thumbs-up-fill',
+            inactiveIcon: 'bi-hand-thumbs-up',
+            urlAction: ['like', 'like'],
+            countKey: 'likes_count'
+        });
     }
 
     function shareUnsharePost(postId) {
-        const btn = document.getElementById(`share-btn-${postId}`);
-        const shareCountEl = document.getElementById(`share-count-${postId}`);
-        const hasShared = btn.classList.contains('text-blue-500');
-        const url = hasShared ? `/posts/${postId}/unshare` : `/posts/${postId}/share`;
-        const method = hasShared ? 'DELETE' : 'POST';
-
-        fetch(url, {
-                method: method,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) throw data;
-
-                // Mise à jour du bouton
-                btn.classList.toggle('text-blue-500');
-                btn.classList.toggle('text-[#77797d]');
-                const icon = btn.querySelector('i');
-                icon.classList.toggle('bi-share');
-                icon.classList.toggle('bi-share-fill');
-
-                // Mise à jour du compteur
-                shareCountEl.textContent =
-                    `${data.shares_count} commentaire${data.shares_count > 1 ? 's' : ''}`;
-            })
-            .catch(err => {
-                console.error(err);
-                alert(err.error || 'Une erreur est survenue.');
-            });
+        togglePostAction({
+            postId,
+            type: 'share',
+            isActiveClass: 'text-blue-500',
+            activeIcon: 'bi-share-fill',
+            inactiveIcon: 'bi-share',
+            urlAction: ['share', 'unshare'],
+            countKey: 'shares_count'
+        });
     }
 </script>
